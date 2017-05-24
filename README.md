@@ -112,7 +112,6 @@ The result on the running test example is as follows
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
 Here's a [link to my video result](./project_video_lanes_grad1.mp4)
-![alt text][video2]
 
 ---
 
@@ -123,7 +122,7 @@ Here's a [link to my video result](./project_video_lanes_grad1.mp4)
 I tried to make use of smoothing but currently I am failing to achieve it.
 Some ways to improve my pipeline
 
-* There are few frames where its a bit wobbly, implementing smoothing will work here.
+* There are few frames where its a bit wobbly, implementing smoothing will work here along with windowed search to make it robust.
 
 The pipeline might fail, in the following cases:
 
