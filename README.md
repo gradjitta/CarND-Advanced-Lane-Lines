@@ -14,6 +14,7 @@
 [image51]: ./example_images/histogram.png
 [image52]: ./example_images/lane_lines.png
 [image61]: ./example_images/radius_dist.png
+[video2]: ./project_video_lanes_grad1.mp4 "Video"
 
 ##### Here I will consider the [rubric](https://review.udacity.com/#!/rubrics/571/view) points individually and describe how I addressed each point in my implementation.  
 
@@ -53,7 +54,7 @@ The following image was specifically chosen as it has shadows, sparse white line
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
-I used a combination of color and gradient(direction and magnitude) threshold. The choice of gradient parameters is done by interactive plot. These parameters are chosen with the help of sliders and visualizing the effect of various thresholds on the image.
+I used a combination of color and gradient(direction and magnitude) threshold. The choice of gradient parameters is done by interactive plot. These parameters are chosen with the help of sliders and visualizing the effect of various thresholds on the image. The code for this is in cell 5 and 7.
 
 
 
@@ -80,7 +81,7 @@ Warped Image
 
 ![alt text][image42]
 
-The code for this part can be found in cells ... and ...
+The code for this part can be found in cells 8 and 9
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
@@ -111,6 +112,7 @@ The result on the running test example is as follows
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
 Here's a [link to my video result](./project_video_lanes_grad1.mp4)
+![alt text][video2]
 
 ---
 
