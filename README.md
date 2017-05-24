@@ -89,14 +89,14 @@ Using the histogram of the binary warped image
 
 ![alt text][image51]
 
-we build the left and right lines using init_search function given in cell with all the functions. Once we have the lines information we can draw them on the warped images as follows
+I constructed left and right lines using init_search function, contained in cell 6. Once we have the line information we can draw them on the warped images as follows
 
 ![alt text][image52]
 
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-The function ``def radcurvature(leftline, rightline)`` computes the radius and the deviation from center. The leftline and rightline objects of class Line store all x. Using these objects,  We fit the new polynomials in the world space and the coefficients from these fitted lines were used to calculate the radii of left and right lines. Further explanation is the code comments.
+The function ``def radcurvature(leftline, rightline)``, in cell 6,  computes the radius and the deviation from center. The leftline and rightline objects of class Line store all x. Using these objects,  We fit the new polynomials in the world space and the coefficients from these fitted lines were used to calculate the radii of left and right lines. Further explanation is the code comments.
 
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
@@ -123,7 +123,7 @@ Here's a [link to my video result](./project_video_lanes_grad1.mp4)
 I tried to make use of smoothing but currently I am failing to achieve it.
 Some ways to improve my pipeline
 
-* Implement smoothing to make it faster
+* There are few frames where its a bit wobbly, implementing smoothing will work here.
 
 The pipeline might fail, in the following cases:
 
