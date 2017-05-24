@@ -1,114 +1,108 @@
-## Writeup Template
-
-### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
-
----
-
-**Advanced Lane Finding Project**
-
-The goals / steps of this project are the following:
-
-* Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
-* Apply a distortion correction to raw images.
-* Use color transforms, gradients, etc., to create a thresholded binary image.
-* Apply a perspective transform to rectify binary image ("birds-eye view").
-* Detect lane pixels and fit to find the lane boundary.
-* Determine the curvature of the lane and vehicle position with respect to center.
-* Warp the detected lane boundaries back onto the original image.
-* Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
+# **Advanced Lane Finding Project**
 
 [//]: # (Image References)
 
-[image1]: ./examples/undistort_output.png "Undistorted"
-[image2]: ./test_images/test1.jpg "Road Transformed"
-[image3]: ./examples/binary_combo_example.jpg "Binary Example"
+[image1]: ./example_images/chessboard_dist.png "Undistorted"
+[image2]: ./example_images/dist_undist.png "Road Transformed"
+[image3]: ./example_images/sliders1.png "Binary Example"
 [image4]: ./examples/warped_straight_lines.jpg "Warp Example"
 [image5]: ./examples/color_fit_lines.jpg "Fit Visual"
 [image6]: ./examples/example_output.jpg "Output"
 [video1]: ./project_video.mp4 "Video"
+[image41]: ./example_images/img_lines.png
+[image42]: ./example_images/warped_transform.png
+[image51]: ./example_images/histogram.png
+[image52]: ./example_images/lane_lines.png
+[image61]: ./example_images/radius_dist.png
 
-## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
-
-### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
+##### Here I will consider the [rubric](https://review.udacity.com/#!/rubrics/571/view) points individually and describe how I addressed each point in my implementation.  
 
 ---
 
-### Writeup / README
-
-#### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  [Here](https://github.com/udacity/CarND-Advanced-Lane-Lines/blob/master/writeup_template.md) is a template writeup for this project you can use as a guide and a starting point.  
-
-You're reading it!
+### Code
+* P4_Advanced_Lane_Finding.ipynb
 
 ### Camera Calibration
 
-#### 1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
+#### 1. Compute the camera matrix and distortion coefficients.
 
-The code for this step is contained in the first code cell of the IPython notebook located in "./examples/example.ipynb" (or in lines # through # of the file called `some_file.py`).  
 
-I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.  Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.  
+The code for this step is contained in the cells 2 and 3. Given a folder of distorted chessboard images we can loop through all the images and collect the image points. The object points are the same for every image. The main line, in cell 2, that extracts the image points from the gray scale image, is given below
 
-I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
+``ret, corners = cv2.findChessboardCorners(gray, (9,6), None)``
+
+Here the corners are the ``imgpoints`` of one distorted chessboard. These are appended into a list of ``imgpoints`` and finally we compute the distortion coefficients and camera calibration using
+
+``ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None) ``
+
+as shown in cell 3. Here, mtx is camera matrix and dist is the distortion coefficients. Finally, distorted image can be undistorted using the following line.
+
+``undist_calib = cv2.undistort(dist_calib, mtx, dist, None, mtx)``
+
 
 ![alt text][image1]
 
 ### Pipeline (single images)
 
+
 #### 1. Provide an example of a distortion-corrected image.
 
-To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
+The following image was specifically chosen as it has shadows, sparse white lines, and traffic. Making sure that, if my pipeline works on this image; it should for the entire road. I applied the distortion correction to this image.
+
 ![alt text][image2]
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+I used a combination of color and gradient(direction and magnitude) threshold. The choice of gradient parameters is done by interactive plot. These parameters are chosen with the help of sliders and visualizing the effect of various thresholds on the image.
+
+
+
 
 ![alt text][image3]
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
-The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
+The following are the source and destination points I used to perform perspective transform
 
-```python
-src = np.float32(
-    [[(img_size[0] / 2) - 55, img_size[1] / 2 + 100],
-    [((img_size[0] / 6) - 10), img_size[1]],
-    [(img_size[0] * 5 / 6) + 60, img_size[1]],
-    [(img_size[0] / 2 + 55), img_size[1] / 2 + 100]])
-dst = np.float32(
-    [[(img_size[0] / 4), 0],
-    [(img_size[0] / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), 0]])
-```
 
-This resulted in the following source and destination points:
+| Source        | Destination   |
+|:-------------:|:-------------:|
+| 203, 720      | 203, 720      |
+| 585, 460      | 203, 0        |
+| 695, 460      | 1000, 0       |
+| 1127, 720     | 1000, 720     |
 
-| Source        | Destination   | 
-|:-------------:|:-------------:| 
-| 585, 460      | 320, 0        | 
-| 203, 720      | 320, 720      |
-| 1127, 720     | 960, 720      |
-| 695, 460      | 960, 0        |
+Original undistorted image
 
-I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
+![alt text][image41]
 
-![alt text][image4]
+Warped Image
+
+![alt text][image42]
+
+The code for this part can be found in cells ... and ...
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+Using the histogram of the binary warped image
 
-![alt text][image5]
+![alt text][image51]
+
+we build the left and right lines using init_search function given in cell with all the functions. Once we have the lines information we can draw them on the warped images as follows
+
+![alt text][image52]
+
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
+The function ``def radcurvature(leftline, rightline)`` computes the radius and the deviation from center. The leftline and rightline objects of class Line store all x. Using these objects,  We fit the new polynomials in the world space and the coefficients from these fitted lines were used to calculate the radii of left and right lines. Further explanation is the code comments.
+
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+The result on the running test example is as follows
 
-![alt text][image6]
+![alt text][image61]
 
 ---
 
@@ -116,7 +110,7 @@ I implemented this step in lines # through # in my code in `yet_another_file.py`
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-Here's a [link to my video result](./project_video.mp4)
+Here's a [link to my video result](./project_video_lanes_final.mp4)
 
 ---
 
@@ -124,4 +118,13 @@ Here's a [link to my video result](./project_video.mp4)
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+I tried to make use of smoothing but currently I am failing to achieve it.
+Some ways to improve my pipeline
+
+* Implement smoothing to make it faster
+
+The pipeline might fail, in the following cases:
+
+* Cracks on the roads in the form of lines can have a major setback to the pipeline
+
+* Sparse road lines can cause wobbly results for radius calculations; since we are using less amount of data. We can overcome this by smoothing
