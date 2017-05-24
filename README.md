@@ -85,7 +85,7 @@ The code for this part can be found in cells 8 and 9
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-Using the histogram of the binary warped image
+Using the plot below, of the binary warped image
 
 ![alt text][image51]
 
@@ -119,7 +119,7 @@ Here's a [link to my video result](./project_video_lanes_grad1.mp4)
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-I tried to make use of smoothing but currently I am failing to achieve it.
+I tried to make use of smoothing but will work on it later.
 Some ways to improve my pipeline
 
 * There are few frames where its a bit wobbly, implementing smoothing will work here along with windowed search to make it robust.
